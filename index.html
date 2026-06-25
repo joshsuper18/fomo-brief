@@ -1,0 +1,957 @@
+<title>Parallel × fomo — Live Monitor Feed</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Parallel × fomo">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#08080D">
+<style>
+:root {
+  --ground:    #08080D;
+  --surface:   #131319;
+  --surface-2: #1C1C26;
+  --border:    rgba(255,255,255,0.07);
+  --border-2:  rgba(255,255,255,0.13);
+  --text:      #FFFFFF;
+  --text-2:    #8888A0;
+  --text-3:    #50506A;
+  --green:     #22C55E;
+  --green-dim: rgba(34,197,94,0.10);
+  --green-bdr: rgba(34,197,94,0.22);
+  --red:       #EF4444;
+  --red-dim:   rgba(239,68,68,0.10);
+  --red-bdr:   rgba(239,68,68,0.22);
+  --amber:     #F59E0B;
+  --amber-dim: rgba(245,158,11,0.10);
+  --amber-bdr: rgba(245,158,11,0.22);
+  --orange:    #F97316;
+  --orange-dim:rgba(249,115,22,0.10);
+  --orange-bdr:rgba(249,115,22,0.22);
+  --blue:      #4F6CFF;
+  --blue-dim:  rgba(79,108,255,0.12);
+  --blue-bdr:  rgba(79,108,255,0.25);
+  --r-xl:  14px;
+  --r-md:   8px;
+  --r-sm:   6px;
+  --r-pill: 100px;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", ui-sans-serif, sans-serif;
+  --mono: "SF Mono", "Cascadia Code", "Fira Code", monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--ground);
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
+
+/* ════════════════════════════════════════
+   APP SHELL
+════════════════════════════════════════ */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* ── MOBILE STATUS BAR ── */
+.status-bar {
+  flex-shrink: 0;
+  height: calc(50px + env(safe-area-inset-top, 0px));
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 28px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ground);
+}
+.status-time { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
+.status-icons { display: flex; align-items: center; gap: 6px; }
+.sig-bars { display: flex; align-items: flex-end; gap: 1.5px; height: 11px; }
+.sig-bars span { background: white; border-radius: 1px; width: 3px; }
+.sig-bars span:nth-child(1){height:4px} .sig-bars span:nth-child(2){height:6px}
+.sig-bars span:nth-child(3){height:8px} .sig-bars span:nth-child(4){height:11px}
+
+/* ── CREDENTIAL BAR ── */
+.cred-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 7px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.03em;
+  overflow-x: auto;
+  scrollbar-width: none;
+  white-space: nowrap;
+}
+.cred-bar::-webkit-scrollbar { display: none; }
+.cred-item { display: flex; align-items: center; gap: 6px; }
+.cred-dot  { width: 3px; height: 3px; background: var(--text-3); border-radius: 50%; flex-shrink: 0; }
+.cred-highlight { color: var(--text-2); font-weight: 600; }
+
+/* ── NAV HEADER ── */
+.nav-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 56px;
+  border-bottom: 1px solid var(--border);
+  background: var(--ground);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-left { display: flex; align-items: center; gap: 12px; }
+.nav-lockup { display: flex; align-items: center; gap: 8px; }
+.nav-fomo     { font-size: 17px; font-weight: 800; letter-spacing: -0.03em; color: #fff; }
+.nav-brand    { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
+.nav-wordmark { font-weight: 900; letter-spacing: -0.02em; color: #fff; }
+.nav-product  { font-weight: 400; color: #6B7280; letter-spacing: 0; }
+.nav-x        { color: var(--text-3); font-size: 13px; font-weight: 300; }
+/* keep legacy refs alive */
+.nav-title { font-size: 18px; font-weight: 700; letter-spacing: -0.4px; display: flex; align-items: center; gap: 6px; }
+.nav-sep { color: var(--text-3); font-weight: 400; font-size: 16px; }
+.nav-dim { color: var(--text-2); }
+.live-badge {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--green-dim); color: var(--green);
+  border: 1px solid var(--green-bdr);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 5px 12px; border-radius: var(--r-pill);
+}
+.live-dot {
+  width: 6px; height: 6px; background: var(--green); border-radius: 50%;
+  animation: livepulse 1.8s ease-in-out infinite;
+}
+@keyframes livepulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.75)} }
+
+/* ── APP BODY (two-panel on desktop, single column on mobile) ── */
+.app-body {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── FEED PANEL ── */
+.feed-panel { background: var(--ground); }
+
+.chip-strip {
+  display: flex; gap: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  scrollbar-width: none;
+}
+.chip-strip::-webkit-scrollbar { display: none; }
+.monitor-chip {
+  flex-shrink: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-pill); padding: 5px 11px;
+  display: flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+.chip-dot { width: 5px; height: 5px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
+.chip-handle { font-size: 12px; font-weight: 600; }
+.chip-label  { font-size: 10px; color: var(--text-3); }
+.chip-time   { font-size: 10px; color: var(--text-3); margin-left: 1px; }
+
+.stream-header {
+  padding: 11px 16px 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.stream-title { font-size: 13px; font-weight: 700; letter-spacing: -0.2px; }
+.last-event-time { font-size: 11px; color: var(--text-3); }
+
+.event-feed { padding: 0 12px 16px; }
+
+.event-card {
+  background: var(--surface); border-radius: var(--r-xl);
+  border: 1px solid var(--border); margin-bottom: 8px;
+  overflow: hidden; display: flex;
+  animation: slideIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+}
+.event-card.new-flash { animation: slideIn 0.28s cubic-bezier(0.34,1.56,0.64,1), flashBorder 1.2s ease-out; }
+@keyframes slideIn { from{opacity:0;transform:translateY(-10px) scale(0.97)} to{opacity:1;transform:none} }
+@keyframes flashBorder { 0%{border-color:rgba(255,255,255,0.3)} 100%{border-color:var(--border)} }
+
+.ev-bar { width: 3px; flex-shrink: 0; border-radius: var(--r-xl) 0 0 var(--r-xl); }
+.sev-high  { background: var(--red); }
+.sev-med   { background: var(--amber); }
+.sev-low   { background: var(--text-3); }
+
+.ev-body { flex: 1; padding: 11px 13px; min-width: 0; }
+.ev-top { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.sev-badge {
+  font-size: 9px; font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: var(--r-pill); flex-shrink: 0;
+}
+.sev-badge.high { background:var(--red-dim);   color:var(--red);   border:1px solid var(--red-bdr); }
+.sev-badge.med  { background:var(--amber-dim);  color:var(--amber); border:1px solid var(--amber-bdr); }
+.sev-badge.low  { background:rgba(80,80,106,0.15); color:var(--text-3); border:1px solid rgba(80,80,106,0.2); }
+.ev-type   { font-size: 12px; font-weight: 600; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ev-source { font-size: 11px; color: var(--text-3); flex-shrink: 0; }
+.ev-ts     { font-size: 10px; color: var(--text-3); flex-shrink: 0; }
+
+.ev-wallet-row { display:flex; align-items:center; gap:6px; margin-bottom:5px; }
+.ev-handle { font-size: 12px; font-weight: 600; }
+.ev-addr   { font-size: 10px; color: var(--text-3); font-family: var(--mono); }
+.ev-collection {
+  font-size: 10px; color: var(--blue);
+  background: var(--blue-dim); border: 1px solid var(--blue-bdr);
+  padding: 1px 7px; border-radius: var(--r-pill);
+  margin-left: auto; white-space: nowrap; flex-shrink: 0;
+}
+.ev-desc {
+  font-size: 12px; line-height: 1.5; color: var(--text-2);
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+
+/* ── BRIEF PANEL ── */
+.brief-panel { background: var(--ground); }
+.brief-content { padding: 20px 16px 32px; }
+
+/* ── SHARED COMPONENTS ── */
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 24px 0 12px;
+}
+.section-head:first-child { margin-top: 0; }
+.section-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+.section-tag {
+  font-size: 11px; color: var(--text-2);
+  background: var(--surface-2); border: 1px solid var(--border);
+  padding: 3px 10px; border-radius: var(--r-pill);
+}
+
+.card {
+  background: var(--surface); border-radius: var(--r-xl);
+  border: 1px solid var(--border); padding: 16px; margin-bottom: 8px;
+}
+.card-title { font-size: 15px; font-weight: 700; line-height: 1.3; letter-spacing: -0.3px; margin-bottom: 8px; }
+.card-body  { font-size: 13px; line-height: 1.6; color: var(--text-2); }
+.card-body + .card-body { margin-top: 8px; }
+.em { color: var(--text); font-weight: 600; }
+
+.callout {
+  display: flex; align-items: flex-start; gap: 9px;
+  padding: 11px 13px; border-radius: var(--r-md);
+  font-size: 12px; line-height: 1.55; color: var(--text); margin-top: 10px;
+}
+.callout.c-orange { background:var(--orange-dim); border:1px solid var(--orange-bdr); }
+.callout.c-green  { background:var(--green-dim);  border:1px solid var(--green-bdr); }
+
+.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
+.stat-chip { background:var(--surface-2); border-radius:var(--r-md); border:1px solid var(--border); padding:9px 11px; }
+.stat-lbl { font-size:9px; font-weight:500; color:var(--text-3); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:3px; }
+.stat-val { font-size:16px; font-weight:700; letter-spacing:-0.3px; }
+.stat-val.c-orange { color:var(--orange); }
+.stat-val.c-blue   { color:var(--blue); }
+
+.perps-badge {
+  display:inline-flex; align-items:center;
+  background:var(--orange-dim); border:1px solid var(--orange-bdr);
+  color:var(--orange); font-size:8px; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.1em;
+  padding:1px 6px; border-radius:4px; vertical-align:middle; margin-left:3px;
+}
+
+.flow-row {
+  display:flex; align-items:center; gap:4px; margin:12px 0 14px; overflow-x:auto;
+  scrollbar-width:none;
+}
+.flow-row::-webkit-scrollbar { display:none; }
+.flow-node {
+  flex:1; min-width:55px;
+  background:var(--surface-2); border-radius:var(--r-sm); border:1px solid var(--border);
+  padding:7px 4px; text-align:center;
+}
+.flow-node.active { background:var(--blue-dim); border-color:var(--blue-bdr); }
+.fn-lbl { font-size:9px; color:var(--text-3); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:2px; }
+.flow-node.active .fn-lbl { color:rgba(79,108,255,0.55); }
+.fn-name { font-size:10px; font-weight:600; line-height:1.3; }
+.flow-node.active .fn-name { color:var(--blue); }
+.flow-arr { color:var(--text-3); font-size:11px; flex-shrink:0; }
+
+.code-block {
+  background:#0C0C12; border-radius:var(--r-md); border:1px solid var(--border);
+  padding:12px 14px; margin:10px 0 14px; overflow-x:auto; scrollbar-width:none;
+}
+.code-block::-webkit-scrollbar { display:none; }
+.code-block pre { font-family:var(--mono); font-size:10.5px; line-height:1.75; color:#BEB8D2; white-space:pre; }
+.ck{color:#9B8FFF} .cv{color:var(--orange)} .cs{color:var(--green)} .cc{color:#44445A}
+
+.signals-lbl { font-size:10px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px; }
+.sig-item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:8px 0; border-bottom:1px solid var(--border);
+  font-size:12px; line-height:1.5; color:var(--text-2);
+}
+.sig-item:last-child { border-bottom:none; }
+.sig-dot { width:5px; height:5px; background:var(--blue); border-radius:50%; flex-shrink:0; margin-top:5px; }
+
+.step-row {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:13px 0; border-bottom:1px solid var(--border);
+}
+.step-row:last-child { border-bottom:none; }
+.step-num {
+  width:28px; height:28px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; flex-shrink:0;
+}
+.step-num.n1{background:rgba(255,199,0,0.12);  color:#FFC700; border:1px solid rgba(255,199,0,0.20);}
+.step-num.n2{background:rgba(180,180,200,0.10); color:#B0B0C8; border:1px solid rgba(180,180,200,0.18);}
+.step-num.n3{background:rgba(205,127,50,0.10);  color:#CD7F32; border:1px solid rgba(205,127,50,0.18);}
+.step-num.n4{background:var(--surface-2); color:var(--text-3); border:1px solid var(--border);}
+.step-content { flex:1; min-width:0; }
+.step-title { font-size:13px; font-weight:600; line-height:1.35; margin-bottom:3px; }
+.step-sub   { font-size:11px; color:var(--text-2); line-height:1.5; }
+.step-tag {
+  font-size:11px; color:var(--green);
+  background:var(--green-dim); border:1px solid var(--green-bdr);
+  padding:3px 8px; border-radius:var(--r-pill);
+  white-space:nowrap; flex-shrink:0; font-weight:600; align-self:flex-start;
+}
+
+.cta-section { margin-top:28px; }
+.cta-eyebrow { text-align:center; font-size:12px; color:var(--text-2); margin-bottom:12px; }
+.cta-btn {
+  display:block; width:100%; background:var(--blue); color:#fff;
+  font-size:15px; font-weight:600; letter-spacing:-0.2px;
+  text-align:center; padding:16px; border-radius:var(--r-pill);
+  text-decoration:none; border:none; cursor:pointer;
+}
+.cta-secondary {
+  display:block; text-align:center; padding:13px;
+  font-size:13px; color:var(--text-2); margin-top:4px; text-decoration:none;
+}
+.cta-foot { text-align:center; font-size:10px; color:var(--text-3); margin-top:20px; letter-spacing:0.04em; }
+
+/* ── MOBILE TAB BAR ── */
+.tab-bar {
+  flex-shrink: 0;
+  height: calc(80px + env(safe-area-inset-bottom, 0px));
+  background: var(--surface); border-top: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-around;
+  padding: 10px 6px 0;
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  position: sticky; bottom: 0;
+}
+.tab-item { display:flex; flex-direction:column; align-items:center; gap:3px; flex:1; opacity:0.35; }
+.tab-item.active { opacity:1; }
+.tab-icon-wrap { width:24px; height:24px; display:flex; align-items:center; justify-content:center; }
+.tab-center-btn {
+  width:48px; height:33px; background:var(--surface-2);
+  border-radius:var(--r-pill); border:1px solid var(--border-2);
+  display:flex; align-items:center; justify-content:center;
+}
+.tab-lbl { font-size:9px; color:var(--text-2); }
+
+/* brief divider (mobile) */
+.brief-divider-wrap {
+  position: relative;
+  margin: 4px 12px 0;
+  padding: 0;
+}
+.brief-divider-wrap hr {
+  border: none; border-top: 1px solid var(--border);
+}
+.brief-divider-label {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--ground); padding: 0 10px;
+  font-size: 10px; font-weight: 600; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap;
+}
+
+/* ════════════════════════════════════════
+   DESKTOP LAYOUT  (≥ 768px)
+════════════════════════════════════════ */
+@media (min-width: 768px) {
+  body { overflow: hidden; height: 100vh; }
+
+  .app-shell { height: 100vh; }
+
+  .status-bar  { display: none; }
+  .tab-bar     { display: none; }
+  .brief-divider-wrap { display: none; }
+
+  .nav-header {
+    position: relative; /* not sticky — it stays at top via flex */
+    height: 60px;
+    padding: 0 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-title { font-size: 20px; }
+
+  /* Nav right: add contact button on desktop */
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .nav-contact {
+    font-size: 12px; font-weight: 600; color: var(--text-2);
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 6px 14px; border-radius: var(--r-pill);
+    text-decoration: none; cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .nav-contact:hover { color: var(--text); border-color: var(--border-2); }
+
+  .app-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .feed-panel {
+    overflow-y: auto; overflow-x: hidden;
+    border-right: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+  .feed-panel::-webkit-scrollbar { display: none; }
+
+  .brief-panel {
+    overflow-y: auto; overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-2) transparent;
+  }
+  .brief-panel::-webkit-scrollbar { width: 5px; }
+  .brief-panel::-webkit-scrollbar-track { background: transparent; }
+  .brief-panel::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 3px; }
+
+  .brief-content {
+    padding: 36px 48px 48px;
+    max-width: 780px;
+  }
+
+  /* Better type scale on desktop */
+  .section-title  { font-size: 19px; }
+  .card-title     { font-size: 16px; }
+  .card-body      { font-size: 14px; }
+  .post-headline  { font-size: 19px; }
+
+  /* Stats get a 4-col row on desktop */
+  .stats-row { grid-template-columns: repeat(4, 1fr); }
+
+  /* Code block gets slightly bigger text */
+  .code-block pre { font-size: 11.5px; }
+
+  /* Feed panel desktop: wider chip strip */
+  .chip-strip { padding: 14px 18px; }
+  .stream-header { padding: 14px 18px 10px; }
+  .event-feed { padding: 0 14px 20px; }
+
+  /* Feed panel header label */
+  .feed-panel-header {
+    padding: 14px 18px 0;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+  }
+}
+
+/* ════════════════════════════════════════
+   MOBILE LAYOUT  (< 768px)
+════════════════════════════════════════ */
+@media (max-width: 767px) {
+  body { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+  .nav-right { display: flex; align-items: center; }
+  .nav-contact { display: none; }
+
+  .app-body { display: flex; flex-direction: column; }
+
+  /* Feed is capped at 62% of viewport — brief content visible on first scroll */
+  .feed-panel {
+    max-height: 62svh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Chip strip doesn't shrink */
+  .chip-strip { flex-shrink: 0; }
+  .stream-header { flex-shrink: 0; }
+
+  /* Events scroll internally inside the capped feed panel */
+  .event-feed {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 48px; /* space for the fade */
+  }
+  .event-feed::-webkit-scrollbar { display: none; }
+
+  /* Fade hint at bottom of feed panel */
+  .feed-panel::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 56px;
+    background: linear-gradient(to bottom, transparent, var(--ground));
+    pointer-events: none;
+  }
+
+  .brief-content { padding: 20px 14px 40px; }
+  .feed-panel-header { display: none; }
+
+  /* Slightly tighter section spacing on mobile */
+  .section-head { margin-top: 20px; margin-bottom: 10px; }
+  .card { padding: 14px; }
+  .step-row { padding: 11px 0; gap: 10px; }
+  .stat-val { font-size: 15px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
+  .event-card, .event-card.new-flash { animation: none; }
+}
+</style>
+
+<div class="app-shell">
+
+  <!-- ── CREDENTIAL BAR ── -->
+  <div class="cred-bar">
+    <div class="cred-item">
+      <span class="cred-highlight">Parallel</span>
+      <span>backed by</span>
+      <span class="cred-highlight">Index Ventures</span>
+    </div>
+    <span class="cred-dot"></span>
+    <div class="cred-item">
+      <span>Monitor API</span>
+      <span style="color:var(--green);font-weight:600">· GA</span>
+    </div>
+    <span class="cred-dot"></span>
+    <div class="cred-item">Prepared for <span class="cred-highlight">fomo · June 2026</span></div>
+  </div>
+
+  <!-- ── MOBILE STATUS BAR ── -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <div class="sig-bars"><span></span><span></span><span></span><span></span></div>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="white" aria-hidden="true">
+        <path d="M8 2.4c2.4 0 4.6 1 6.1 2.6L15.5 3.6C13.6 1.4 11 0 8 0 5 0 2.4 1.4.5 3.6L1.9 5C3.4 3.4 5.6 2.4 8 2.4z"/>
+        <path d="M8 5.6c1.6 0 3 .6 4.1 1.6l1.4-1.4C12 4.4 10.1 3.6 8 3.6c-2.1 0-4 .8-5.4 2.2L4 7.2C5 6.2 6.4 5.6 8 5.6z"/>
+        <path d="M8 8.8c.8 0 1.5.3 2 .8l1.5-1.4C10.4 7.4 9.3 6.9 8 6.9c-1.3 0-2.4.5-3.4 1.3L6 9.6C6.5 9.1 7.2 8.8 8 8.8z"/>
+        <circle cx="8" cy="11.5" r="1.2"/>
+      </svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none" aria-hidden="true">
+        <rect x=".5" y=".5" width="20" height="11" rx="3" stroke="rgba(255,255,255,0.35)"/>
+        <rect x="1.5" y="1.5" width="18" height="9" rx="2" fill="white"/>
+        <path d="M22.5 4.5v3c.7-.4 1.2-1 1.2-1.5s-.5-1.1-1.2-1.5z" fill="rgba(255,255,255,0.4)"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── NAV HEADER ── -->
+  <header class="nav-header">
+    <div class="nav-left">
+      <span class="nav-fomo">fomo</span>
+      <span class="nav-x">×</span>
+      <span class="nav-brand"><span class="nav-wordmark">parallel</span><span class="nav-product"> Monitor</span></span>
+    </div>
+    <div class="nav-right">
+      <a href="mailto:josh@parallel.ai" class="nav-contact">Contact</a>
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        <span id="monitor-count">20 Running</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── APP BODY ── -->
+  <div class="app-body">
+
+    <!-- LEFT / TOP: FEED PANEL -->
+    <aside class="feed-panel" aria-label="Live monitor feed">
+      <div class="feed-panel-header">20 monitors · fomo curated wallets</div>
+
+      <!-- Monitor chips -->
+      <div class="chip-strip" id="chip-strip" aria-label="Active monitors"></div>
+
+      <!-- Stream header -->
+      <div class="stream-header">
+        <div style="display:flex;align-items:center;gap:6px">
+          <svg width="12" height="14" viewBox="0 0 13 15" fill="none" aria-hidden="true">
+            <path d="M6.5 0C7.05 0 7.5.45 7.5 1V1.42C9.72 1.96 11.5 3.97 11.5 6.5V9.5L12.85 10.85C13.15 11.15 12.94 11.65 12.5 11.65H.5C.06 11.65-.15 11.15.15 10.85L1.5 9.5V6.5C1.5 3.97 3.28 1.96 5.5 1.42V1C5.5.45 5.95 0 6.5 0Z" fill="rgba(255,255,255,0.4)"/>
+            <path d="M5 12.5C5 13.33 5.67 14 6.5 14C7.33 14 8 13.33 8 12.5H5Z" fill="rgba(255,255,255,0.4)"/>
+          </svg>
+          <span class="stream-title">Live Events</span>
+        </div>
+        <span class="last-event-time" id="last-event-label">Monitoring now</span>
+      </div>
+
+      <!-- Event cards -->
+      <div class="event-feed" id="event-feed" role="log" aria-live="polite" aria-label="Live monitor events"></div>
+    </aside>
+
+    <!-- RIGHT / BOTTOM: BRIEF PANEL -->
+    <main class="brief-panel">
+
+      <!-- Mobile divider -->
+      <div class="brief-divider-wrap">
+        <hr>
+        <div class="brief-divider-label">About this brief</div>
+      </div>
+
+      <div class="brief-content">
+
+        <!-- HERO CARD -->
+        <div class="card" style="margin-bottom:16px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:var(--orange);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+            <span style="width:5px;height:5px;background:var(--orange);border-radius:50%;display:inline-block;flex-shrink:0"></span>
+            Priority Use Case
+          </div>
+          <h1 style="font-size:19px;font-weight:700;line-height:1.25;letter-spacing:-0.5px;margin-bottom:10px">
+            fomo needs to know when a promoted wallet goes bad — before its users do
+          </h1>
+          <p class="card-body">
+            625K users. Curated leaderboards. Copy trading on Hyperliquid perps<span class="perps-badge">NEW</span> just launched. The reputation of every wallet fomo promotes is now a product liability — and a 16-person team can't monitor it manually.
+          </p>
+          <div class="stats-row">
+            <div class="stat-chip"><div class="stat-lbl">Users</div><div class="stat-val">625K</div></div>
+            <div class="stat-chip"><div class="stat-lbl">Non-crypto native</div><div class="stat-val c-orange">90%</div></div>
+            <div class="stat-chip"><div class="stat-lbl">Perps launched</div><div class="stat-val c-blue">Jun 11</div></div>
+            <div class="stat-chip"><div class="stat-lbl">Team</div><div class="stat-val">16 ppl</div></div>
+          </div>
+        </div>
+
+        <!-- THE PROBLEM -->
+        <div class="section-head">
+          <span class="section-title">The Problem</span>
+          <span class="section-tag">3 risk scenarios</span>
+        </div>
+
+        <div class="card">
+          <p class="card-body" style="color:var(--text);margin-bottom:9px">
+            fomo curates wallet collections — "90%+ Winrate," "High-Efficiency," "Safe &amp; Smart," "New Whales" — displayed in the Insights tab. Users browse, tap a profile, hit Copy Trade. Performance labels are computed from on-chain data.
+          </p>
+          <p class="card-body">
+            On-chain performance looks clean. Off-chain, the same wallet is being called out as a wash trader on Twitter/X, flagged in a Discord, or mentioned in a regulatory filing. <strong style="color:var(--text)">fomo doesn't know. Their users copy the trade. Money is lost.</strong>
+          </p>
+          <div class="callout c-orange">
+            <span style="flex-shrink:0">⚠</span>
+            <span>90% of fomo's users came from TikTok and Instagram. They cannot self-verify. When they lose money on a fomo-promoted wallet, the story goes viral before support can respond.</span>
+          </div>
+        </div>
+
+        <!-- RISK CARDS -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:8px">
+          <div class="card" style="border-left:3px solid var(--red);margin-bottom:0">
+            <div style="font-size:18px;margin-bottom:7px">🔁</div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">Wash Trading</div>
+            <div style="font-size:12px;color:var(--text-2);line-height:1.5">A wallet self-trades to inflate its winrate. Crypto Twitter spots it and posts evidence. fomo users are mid-copy-trade.</div>
+          </div>
+          <div class="card" style="border-left:3px solid var(--red);margin-bottom:0">
+            <div style="font-size:18px;margin-bottom:7px">📋</div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">Regulatory Flag</div>
+            <div style="font-size:12px;color:var(--text-2);line-height:1.5">An SEC or CFTC action names a wallet or associated entity. fomo is still promoting it in Insights with a "Safe &amp; Smart" label.</div>
+          </div>
+          <div class="card" style="border-left:3px solid var(--amber);margin-bottom:0">
+            <div style="font-size:18px;margin-bottom:7px">📉</div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">Coordinated Dump</div>
+            <div style="font-size:12px;color:var(--text-2);line-height:1.5">A top-leaderboard wallet quietly assembles a position, promotes it to followers, then exits. Off-chain coordination is visible before the on-chain move.</div>
+          </div>
+        </div>
+
+        <!-- THE SOLUTION -->
+        <div class="section-head">
+          <span class="section-title">The Solution</span>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px">
+            <div>
+              <div class="card-title">Parallel Monitor API</div>
+              <div style="font-size:13px;color:var(--text-2);line-height:1.5">One monitor per promoted wallet. Semantic event detection. Fires on meaning — not keywords. Dedup built in.</div>
+            </div>
+            <div style="background:var(--green-dim);color:var(--green);border:1px solid var(--green-bdr);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;padding:5px 12px;border-radius:var(--r-pill);white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px">
+              <span style="width:5px;height:5px;background:var(--green);border-radius:50%;animation:livepulse 1.8s ease-in-out infinite"></span>Live
+            </div>
+          </div>
+
+          <div class="flow-row">
+            <div class="flow-node"><div class="fn-lbl">fomo</div><div class="fn-name">Insights collection</div></div>
+            <div class="flow-arr">→</div>
+            <div class="flow-node active"><div class="fn-lbl">Parallel</div><div class="fn-name">Monitor per wallet</div></div>
+            <div class="flow-arr">→</div>
+            <div class="flow-node"><div class="fn-lbl">Alert</div><div class="fn-name">Before users affected</div></div>
+            <div class="flow-arr">→</div>
+            <div class="flow-node"><div class="fn-lbl">Action</div><div class="fn-name">Remove or flag</div></div>
+          </div>
+
+          <div class="signals-lbl">Sample config</div>
+          <div class="code-block">
+            <pre><span class="cc"># One monitor per curated wallet</span>
+{
+  <span class="ck">"query"</span>: <span class="cs">"Negative sentiment, fraud
+    allegations, wash trading, or
+    regulatory flags linked to
+    wallet 0xABC123"</span>,
+  <span class="ck">"frequency"</span>: <span class="cv">"hourly"</span>,
+  <span class="ck">"output_schema"</span>: {
+    <span class="ck">"event_type"</span>: <span class="cs">"string"</span>,
+    <span class="ck">"severity"</span>:  <span class="cs">"low|med|high"</span>,
+    <span class="ck">"source_url"</span>: <span class="cs">"string"</span>,
+    <span class="ck">"wallet"</span>:    <span class="cs">"string"</span>
+  }
+}</pre>
+          </div>
+
+          <div class="signals-lbl">What gets monitored</div>
+          <div class="sig-item"><span class="sig-dot"></span><span>Twitter/X threads calling out wash trading or manipulation on a specific wallet</span></div>
+          <div class="sig-item"><span class="sig-dot"></span><span>Reddit, Discord, and crypto forums flagging a promoted trader as a bot or sybil</span></div>
+          <div class="sig-item"><span class="sig-dot"></span><span>News mentions linking a wallet address or entity to SEC/CFTC enforcement</span></div>
+          <div class="sig-item"><span class="sig-dot"></span><span>Other copy-trade platforms reporting user losses from the same wallet</span></div>
+          <div class="sig-item"><span class="sig-dot"></span><span>Coordinated social activity suggesting a pump-and-dump in progress</span></div>
+
+          <div class="callout c-green" style="margin-top:14px">
+            <span style="flex-shrink:0">✦</span>
+            <span>"This wallet's winrate is faked via self-trades" triggers. A post about a different wallet with a similar address doesn't. The same story across 10 sources fires once.</span>
+          </div>
+        </div>
+
+        <!-- WHY NOW -->
+        <div class="section-head">
+          <span class="section-title">Why Now</span>
+        </div>
+
+        <div class="card" style="border-top:2px solid var(--orange)">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.10em;color:var(--orange);margin-bottom:8px">⚡ Perps changed the risk profile</div>
+          <div class="card-title">When fomo was spot-only, a bad wallet cost users a meme token. Now it can wipe an account in minutes.</div>
+          <p class="card-body">Since <span class="em">June 11</span>, fomo users can copy-trade leveraged perp positions on Hyperliquid. A manipulated wallet at 5× leverage can wipe a follower's account before they see the first alert — the reputational exposure is categorically different.</p>
+          <p class="card-body" style="margin-top:8px">fomo's entire product bet is that social trust scales. The leaderboard is fomo's credibility surface. A viral TikTok about a fomo-promoted wallet that rugged is not a support ticket problem — it's a Series C story. At <span class="em">$75M raised</span> and 625K users, a single high-profile incident now has enough surface area to matter.</p>
+          <p class="card-body" style="margin-top:8px">This is a <span class="em">2-week window</span>. Perps just launched and the team is heads-down on rollout. Setting up monitors now is cheap insurance before the perps user base gets large enough for a bad event to be costly.</p>
+        </div>
+
+        <!-- PILOT PLAN -->
+        <div class="section-head">
+          <span class="section-title">Pilot Plan</span>
+          <span class="section-tag">Top 20 wallets</span>
+        </div>
+        <p class="card-body" style="margin-bottom:12px">20 Monitor runs at 3 CPM each. Cheap to test, immediate to validate, directly tied to fomo's highest-traffic Insights collections.</p>
+
+        <div class="card">
+          <div class="step-row">
+            <div class="step-num n1">1</div>
+            <div class="step-content">
+              <div class="step-title">Pull top 20 wallets from fomo Smarts, 90%+ Winrate, and Safe &amp; Smart</div>
+              <div class="step-sub">Highest copy-trade followers — highest exposure. Start where the risk is concentrated.</div>
+            </div>
+            <div class="step-tag">Start here</div>
+          </div>
+          <div class="step-row">
+            <div class="step-num n2">2</div>
+            <div class="step-content">
+              <div class="step-title">Spin up one Monitor per wallet, 24h frequency to establish baseline</div>
+              <div class="step-sub">Initializes with past events on first run — no cold start problem.</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-num n3">3</div>
+            <div class="step-content">
+              <div class="step-title">Route alerts to Slack — one line of integration for fomo's eng team</div>
+              <div class="step-sub">Native Slack integration. Monitor events pipe directly into a channel without custom plumbing.</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-num n4">4</div>
+            <div class="step-content">
+              <div class="step-title">Expand to the full Insights catalog after validating signal quality</div>
+              <div class="step-sub">Same config, same query, more wallet addresses. Scales linearly at 3 CPM per run.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-section">
+          <div class="cta-eyebrow">20 monitors · 3 CPM each · Start this week</div>
+          <a href="mailto:josh@parallel.ai" class="cta-btn">Start the pilot →</a>
+          <a href="mailto:josh@parallel.ai" class="cta-secondary">Questions? Contact Parallel</a>
+          <div class="cta-foot">Parallel Web Systems · Internal · June 24, 2026</div>
+        </div>
+
+      </div><!-- /brief-content -->
+    </main><!-- /brief-panel -->
+  </div><!-- /app-body -->
+
+  <!-- ── MOBILE TAB BAR ── -->
+  <nav class="tab-bar" aria-label="App navigation">
+    <div class="tab-item"><div class="tab-icon-wrap"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 9.5L11 3l8 6.5V19a1 1 0 01-1 1H14v-5H8v5H4a1 1 0 01-1-1V9.5z" stroke="#8888A0" stroke-width="1.5" stroke-linejoin="round"/></svg></div><span class="tab-lbl">Home</span></div>
+    <div class="tab-item"><div class="tab-icon-wrap"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#8888A0" stroke-width="1.5"/><path d="M14 14l4 4" stroke="#8888A0" stroke-width="1.5" stroke-linecap="round"/></svg></div><span class="tab-lbl">Search</span></div>
+    <div class="tab-item active"><div class="tab-icon-wrap"><div class="tab-center-btn" style="font-size:13px;font-weight:800;letter-spacing:-0.03em;color:#fff">fomo</div></div></div>
+    <div class="tab-item"><div class="tab-icon-wrap"><svg width="22" height="20" viewBox="0 0 22 20" fill="none"><circle cx="11" cy="7" r="3.5" stroke="#8888A0" stroke-width="1.5"/><circle cx="17.5" cy="7" r="2.5" stroke="#8888A0" stroke-width="1.5"/><circle cx="4.5" cy="7" r="2.5" stroke="#8888A0" stroke-width="1.5"/><path d="M3 18c0-3.3 3.6-5.5 8-5.5S19 14.7 19 18" stroke="#8888A0" stroke-width="1.5" stroke-linecap="round"/></svg></div><span class="tab-lbl">People</span></div>
+    <div class="tab-item"><div class="tab-icon-wrap"><svg width="20" height="22" viewBox="0 0 20 22" fill="none"><circle cx="10" cy="8" r="4" stroke="#8888A0" stroke-width="1.5"/><path d="M3 20c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="#8888A0" stroke-width="1.5" stroke-linecap="round"/></svg></div><span class="tab-lbl">Profile</span></div>
+  </nav>
+
+</div><!-- /app-shell -->
+
+<script>
+const WALLETS = [
+  { addr:"0x3r0...A1B2", handle:"@0xg3ro",    label:"90%+ Winrate", minsAgo:2  },
+  { addr:"0xle0...C3D4", handle:"@0xleo",      label:"Safe & Smart", minsAgo:1  },
+  { addr:"0xluk...E5F6", handle:"@liukai",     label:"fomo Smarts",  minsAgo:4  },
+  { addr:"0xPGc...G7H8", handle:"@pingucharts",label:"90%+ Winrate", minsAgo:3  },
+  { addr:"0xOHT...I9J0", handle:"@_OHT_",      label:"Safe & Smart", minsAgo:7  },
+  { addr:"0xmk4...K1L2", handle:"@boosted",    label:"fomo Smarts",  minsAgo:5  },
+  { addr:"0xRod...M3N4", handle:"@rodotfun",   label:"New Whales",   minsAgo:6  },
+  { addr:"0xBLN...O5P6", handle:"@BLUNF",      label:"90%+ Winrate", minsAgo:9  },
+  { addr:"0xSSO...Q7R8", handle:"@SillySmall", label:"Safe & Smart", minsAgo:11 },
+  { addr:"0xCr0...S9T0", handle:"@Crypt0N8v",  label:"fomo Smarts",  minsAgo:8  },
+  { addr:"0xfar...U1V2", handle:"@farmerchts", label:"90%+ Winrate", minsAgo:13 },
+  { addr:"0x404...W3X4", handle:"@404flipped",  label:"New Whales",  minsAgo:10 },
+];
+
+const EVENT_DEFS = [
+  { label:"Wash Trading Allegation",  severity:"high", sources:["Twitter/X","CoinDesk"],
+    descs:["Thread claiming self-trades inflated win rate on recent $WORLD position",
+           "On-chain analysis: 67% of volume traced to wallet-controlled addresses",
+           "Multiple accounts sharing evidence of self-trade pattern on Hyperliquid perps"] },
+  { label:"Regulatory Mention",       severity:"high", sources:["Reuters","CoinDesk","CFTC.gov"],
+    descs:["Referenced in CFTC informal inquiry — copy trader losses cited",
+           "Named in SEC staff investigation into DeFi market manipulation",
+           "Wallet flagged in FinCEN suspicious activity report filed this week"] },
+  { label:"Community Warning",        severity:"med",  sources:["Discord","Reddit","Telegram"],
+    descs:["Crypto Discord server flagging coordinated buy signal across multiple groups",
+           "r/CryptoCurrency thread warning followers to avoid copying this trader",
+           "Large Telegram group calling out suspicious exit timing on $HYPE"] },
+  { label:"Copy Trade Loss Report",   severity:"med",  sources:["Reddit","Twitter/X"],
+    descs:["23 fomo copy traders reporting -34% on positions following this wallet",
+           "Twitter thread compiling screenshots of copy trade losses this week",
+           "Telegram group: 40+ members report outsized losses copying this wallet"] },
+  { label:"Coordination Signal",      severity:"low",  sources:["Telegram","Discord"],
+    descs:["Coordinating exit across private groups after promoting token to followers",
+           "Unusual spike in private mentions 2h before major position unwind",
+           "Cross-platform signal consistent with pre-exit coordination"] },
+  { label:"Negative Sentiment Shift", severity:"low",  sources:["Twitter/X","Reddit"],
+    descs:["Rapid negative sentiment — 47 posts in 2h questioning recent performance claims",
+           "Aggregated social score dropped 3.2σ from 7-day average overnight",
+           "Unusual uptick in skeptical coverage after 6-week positive streak"] },
+];
+
+function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+let eventId = 0;
+let lastEventMs = Date.now();
+
+function relTime(ms) {
+  const s = Math.floor((Date.now() - ms) / 1000);
+  if (s < 5)  return "just now";
+  if (s < 60) return s + "s ago";
+  return Math.floor(s / 60) + "m ago";
+}
+
+function buildCard(w, def, isNew) {
+  const sev = def.severity;
+  const div = document.createElement("div");
+  div.className = "event-card" + (isNew ? " new-flash" : "");
+  div.dataset.ts = String(Date.now());
+  div.innerHTML =
+    '<div class="ev-bar sev-' + sev + '"></div>' +
+    '<div class="ev-body">' +
+      '<div class="ev-top">' +
+        '<span class="sev-badge ' + sev + '">' + sev.toUpperCase() + '</span>' +
+        '<span class="ev-type">' + def.label + '</span>' +
+        '<span class="ev-source">' + pick(def.sources) + '</span>' +
+        '<span class="ev-ts" data-ts="' + Date.now() + '">just now</span>' +
+      '</div>' +
+      '<div class="ev-wallet-row">' +
+        '<span class="ev-handle">' + w.handle + '</span>' +
+        '<span class="ev-addr">' + w.addr + '</span>' +
+        '<span class="ev-collection">' + w.label + '</span>' +
+      '</div>' +
+      '<div class="ev-desc">' + pick(def.descs) + '</div>' +
+    '</div>';
+  return div;
+}
+
+const feed = document.getElementById("event-feed");
+const lastLbl = document.getElementById("last-event-label");
+const MAX_CARDS = 9;
+
+function addEvent(w, def, isNew) {
+  lastEventMs = Date.now();
+  const card = buildCard(w, def, isNew);
+  feed.insertBefore(card, feed.firstChild);
+  while (feed.children.length > MAX_CARDS) {
+    const old = feed.lastChild;
+    old.style.transition = "opacity 0.4s";
+    old.style.opacity = "0";
+    setTimeout(function() { if (old.parentNode) old.parentNode.removeChild(old); }, 400);
+  }
+}
+
+// Build chips
+(function() {
+  const strip = document.getElementById("chip-strip");
+  WALLETS.forEach(function(w) {
+    const c = document.createElement("div");
+    c.className = "monitor-chip";
+    c.innerHTML =
+      '<span class="chip-dot"></span>' +
+      '<span class="chip-handle">' + w.handle + '</span>' +
+      '<span class="chip-label">' + w.label + '</span>' +
+      '<span class="chip-time" data-base="' + w.minsAgo + '" data-offset="0">' + w.minsAgo + 'm ago</span>';
+    strip.appendChild(c);
+  });
+})();
+
+// Seed initial events (oldest first so newest ends up on top)
+var SEEDS = [
+  [0,0,0],[2,2,1],[4,1,0],[7,3,2],[1,4,0]
+];
+SEEDS.reverse().forEach(function(s) {
+  var w = WALLETS[s[0]], def = EVENT_DEFS[s[1]];
+  var card = buildCard(w, def, false);
+  var secsAgo = [47,118,203,341,512][SEEDS.indexOf(s)] || 100;
+  card.dataset.ts = String(Date.now() - secsAgo * 1000);
+  card.querySelector("[data-ts]").dataset.ts = card.dataset.ts;
+  card.querySelector("[data-ts]").textContent = relTime(parseInt(card.dataset.ts));
+  feed.appendChild(card);
+});
+
+// Live stream
+function scheduleNext() {
+  setTimeout(function() {
+    addEvent(pick(WALLETS), pick(EVENT_DEFS), true);
+    scheduleNext();
+  }, 4000 + Math.random() * 9000);
+}
+scheduleNext();
+
+// Tick
+setInterval(function() {
+  document.querySelectorAll(".ev-ts[data-ts]").forEach(function(el) {
+    el.textContent = relTime(parseInt(el.dataset.ts));
+  });
+  var s = Math.floor((Date.now() - lastEventMs) / 1000);
+  lastLbl.textContent = s < 5 ? "Event received just now"
+    : s < 60 ? "Last event " + s + "s ago"
+    : "Last event " + Math.floor(s/60) + "m ago";
+}, 3000);
+
+// Chip minute bumper
+setInterval(function() {
+  document.querySelectorAll(".chip-time[data-base]").forEach(function(el) {
+    var base = parseInt(el.dataset.base);
+    var off  = parseInt(el.dataset.offset) + 1;
+    el.dataset.offset = String(off);
+    el.textContent = (base + off) + "m ago";
+  });
+}, 60000);
+</script>
