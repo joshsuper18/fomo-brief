@@ -944,17 +944,21 @@ SEEDS.reverse().forEach(function(s) {
   feed.appendChild(card);
 });
 
-// Live stream
+// Live stream — pause when tab is hidden to prevent memory buildup
+var streamTimer = null;
 function scheduleNext() {
-  setTimeout(function() {
-    addEvent(pick(WALLETS), pick(EVENT_DEFS), true);
+  streamTimer = setTimeout(function() {
+    if (!document.hidden) {
+      addEvent(pick(WALLETS), pick(EVENT_DEFS), true);
+    }
     scheduleNext();
   }, 4000 + Math.random() * 9000);
 }
 scheduleNext();
 
-// Tick
-setInterval(function() {
+// Tick — pause when hidden
+var tickInterval = setInterval(function() {
+  if (document.hidden) return;
   document.querySelectorAll(".ev-ts[data-ts]").forEach(function(el) {
     el.textContent = relTime(parseInt(el.dataset.ts));
   });
@@ -966,6 +970,7 @@ setInterval(function() {
 
 // Chip minute bumper
 setInterval(function() {
+  if (document.hidden) return;
   document.querySelectorAll(".chip-time[data-base]").forEach(function(el) {
     var base = parseInt(el.dataset.base);
     var off  = parseInt(el.dataset.offset) + 1;
@@ -973,4 +978,11 @@ setInterval(function() {
     el.textContent = (base + off) + "m ago";
   });
 }, 60000);
+
+// Clean up new-flash class after animation to free GPU resources
+document.addEventListener('animationend', function(e) {
+  if (e.target.classList && e.target.classList.contains('new-flash')) {
+    e.target.classList.remove('new-flash');
+  }
+});
 </script>
