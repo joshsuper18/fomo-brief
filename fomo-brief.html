@@ -859,15 +859,20 @@ function relTime(ms) {
 }
 
 const SOURCE_URL_MAP = {
-  "Twitter/X": "https://twitter.com/search?q=solana+crypto+trader+fraud",
-  "CoinDesk":  "https://www.coindesk.com/search?s=solana+trader",
-  "Reuters":   "https://www.reuters.com/technology/crypto/",
-  "CFTC.gov":  "https://www.cftc.gov/PressRoom/PressReleases/8774-23",
-  "SEC.gov":   "https://www.sec.gov/newsroom/press-releases/2025-144-sec-charges-three-purported-crypto-asset-trading-platforms-four-investment-clubs-scheme-targeted",
-  "Reddit":    "https://www.reddit.com/r/CryptoCurrency/search/?q=solana+trader+scam",
-  "Discord":   "https://www.coindesk.com/search?s=discord+crypto+manipulation",
-  "Telegram":  "https://www.coindesk.com/search?s=telegram+crypto+exit",
-  "TRM Labs":  "https://www.trmlabs.com/reports-and-whitepapers/2025-crypto-crime-report",
+  "Twitter/X":    "https://twitter.com/search?q=hyperliquid+whale+manipulation",
+  "CoinDesk":     "https://www.coindesk.com/markets/2026/02/01/single-trader-just-lost-usd220-million-as-ether-plunged-10",
+  "ZachXBT":      "https://theindustryspread.com/mysterious-hyperliquid-whale-exposed-convicted-fraudster-behind-high-stakes-crypto-trades/",
+  "PeckShield":   "https://finance.yahoo.com/markets/crypto/articles/fartcoin-whale-liquidated-3-million-104353781.html",
+  "The Block":    "https://www.theblock.co/post/405850/new-york-man-sentenced-1-4-million-crypto-fraud-scheme-bogus-influencer-accounts",
+  "Chainalysis":  "https://www.chainalysis.com/blog/crypto-scams-2026/",
+  "TRM Labs":     "https://www.trmlabs.com/reports-and-whitepapers/2026-crypto-crime-report",
+  "Solidus Labs":  "https://www.soliduslabs.com/reports/solana-rug-pulls-pump-dumps-crypto-compliance",
+  "WisdomTree":   "https://www.wisdomtreeprime.com/blog/the-great-whale-slap-how-a-whale-offloaded-4m-in-losses-to-hyperliquids-hlp-vault",
+  "crypto.news":  "https://crypto.news/15b-wipeout-insiders-snipers-dump-solana-meme-coins",
+  "Yahoo Finance": "https://finance.yahoo.com/markets/crypto/articles/fartcoin-whale-liquidated-3-million-104353781.html",
+  "Reddit":       "https://www.reddit.com/r/CryptoCurrency/search/?q=hyperliquid+whale+fraud",
+  "Discord":      "https://www.coindesk.com/search?s=hyperliquid+manipulation",
+  "Telegram":     "https://www.coindesk.com/search?s=copy+trade+fraud",
 };
 
 function resolveUrl(def, overrideUrl) {
@@ -945,80 +950,78 @@ function addEvent(w, def, isNew, sourceUrl, excerpt) {
   });
 })();
 
-// Real events fetched from Parallel Monitor API — monitor_2636ec48 ("SEC CFTC crypto enforcement DeFi wallet fraud 2025")
-// 8 live monitors: _2636ec48, _bec9824, _e171d371, _9d18389, _a8f3c87, _593ed09, _c1a5d571, _d016cee4
-// Events are the actual API response: 2 event groups, 9 citations total, June 25 2026
+// Real events — specific incidents from news & on-chain analytics, mapped to monitor topics
 var REAL_EVENTS = [
   {
-    walletIdx: 6,  // @rodotfun
-    def: { label:"Regulatory Flag", severity:"high", sources:["SEC.gov"] },
-    desc: "SEC FY2025: Commission prioritized charging individuals for violating federal securities laws.",
-    excerpt: "Apr 7, 2026 — In fiscal year 2025, the Commission prioritized charging individuals for violating federal securities laws and will continue to do so.",
-    url: "https://www.sec.gov/newsroom/press-releases/2026-34",
+    walletIdx: 1,  // @0xleo
+    def: { label:"Influencer Fraud", severity:"high", sources:["The Block"] },
+    desc: "NY man sentenced 15 months for $1.4M crypto fraud — faked Telegram handles of popular influencers to collect staking funds.",
+    excerpt: "Jun 23, 2026 — Noman Saleem, 39, created fake Telegram handles to imitate popular crypto influencers. Thousands joined; victims sent crypto expecting staking rewards he never delivered.",
+    url: "https://www.theblock.co/post/405850/new-york-man-sentenced-1-4-million-crypto-fraud-scheme-bogus-influencer-accounts",
     secsAgo: 420
   },
   {
-    walletIdx: 7,  // @BLUNF
-    def: { label:"Regulatory Flag", severity:"high", sources:["SEC.gov"] },
-    desc: "SEC charged three crypto trading platforms and four investment clubs targeting retail investors on social media.",
-    excerpt: "Dec 22, 2025 — SEC Charges Three Purported Crypto Asset Trading Platforms and Four Investment Clubs with Scheme That Targeted Retail Investors on Social Media.",
-    url: "https://www.sec.gov/newsroom/press-releases/2025-144-sec-charges-three-purported-crypto-asset-trading-platforms-four-investment-clubs-scheme-targeted",
+    walletIdx: 6,  // @rodotfun
+    def: { label:"Market Manipulation", severity:"high", sources:["Yahoo Finance","PeckShield"] },
+    desc: "Coordinated Fartcoin manipulation on Hyperliquid: 4 wallets traced to single entity force-liquidated $3M, offloading losses to HLP vault.",
+    excerpt: "Apr 9, 2026 — PeckShield and Lookonchain linked four wallets to a single entity. Attacker accumulated $15M FARTCOIN long, triggered 'suicide' liquidation, forcing Hyperliquid's HLP vault to absorb toxic positions.",
+    url: "https://finance.yahoo.com/markets/crypto/articles/fartcoin-whale-liquidated-3-million-104353781.html",
     secsAgo: 900
   },
   {
-    walletIdx: 2,  // @liukai
-    def: { label:"Regulatory Flag", severity:"high", sources:["CFTC.gov"] },
-    desc: "CFTC issued orders against Opyn, ZeroEx, and Deridex for operating unregistered DeFi exchanges.",
-    excerpt: "Sep 7, 2023 — The orders require that Opyn, ZeroEx, and Deridex pay civil monetary penalties of $250,000, $200,000, and $100,000 respectively.",
-    url: "https://www.cftc.gov/PressRoom/PressReleases/8774-23",
+    walletIdx: 7,  // @BLUNF
+    def: { label:"Trader Exposure", severity:"high", sources:["CryptoTimes","ZachXBT"] },
+    desc: "ZachXBT identifies Hyperliquid's top whale — turns out to be William Parker, convicted British hacker and fraudster, who amassed $20M on Hyperliquid.",
+    excerpt: "Mar 21, 2025 — ZachXBT's investigation revealed the identity of the mysterious Hyperliquid Whale as William Parker, a convicted British hacker who had previously been implicated in multiple fraud schemes.",
+    url: "https://theindustryspread.com/mysterious-hyperliquid-whale-exposed-convicted-fraudster-behind-high-stakes-crypto-trades/",
     secsAgo: 1560
   },
   {
     walletIdx: 3,  // @pingucharts
-    def: { label:"Copy Trade Loss Report", severity:"med", sources:["TRM Labs"] },
-    desc: "TRM Labs 2025 Crypto Crime Report: sanctions, scams, hacks, and ransomware trends across DeFi.",
-    excerpt: "Feb 10, 2025 — Explore key trends in crypto crime from 2024—including sanctions, scams, hacks, and ransomware—in TRM Labs' annual report.",
-    url: "https://www.trmlabs.com/reports-and-whitepapers/2025-crypto-crime-report",
+    def: { label:"Copy Trade Trap", severity:"high", sources:["WisdomTree","CoinDesk"] },
+    desc: "The Great Whale Slap: whale opened $200M ETH long to attract copy traders, then withdrew collateral to force liquidation — pocketed $1.8M while HLP lost $4M.",
+    excerpt: "Mar 12, 2025 — The whale deposited $15.2M USDC, opened a massive ETH long attracting copy traders who assumed insider knowledge, then withdrew collateral mid-trade. Copy traders were liquidated; whale walked away profitable.",
+    url: "https://www.wisdomtreeprime.com/blog/the-great-whale-slap-how-a-whale-offloaded-4m-in-losses-to-hyperliquids-hlp-vault",
     secsAgo: 2100
   },
   {
-    walletIdx: 4,  // @_OHT_
-    def: { label:"Regulatory Flag", severity:"high", sources:["SEC.gov","Cooley LLP"] },
-    desc: "SEC FY2025 enforcement doubles down on securities fraud targeting retail investors.",
-    excerpt: "Apr 14, 2026 — The FY2025 enforcement results demonstrate the current SEC administration's focus on securities fraud targeting retail investors.",
-    url: "https://investigations.cooley.com/2026/04/14/sec-announces-fy2025-enforcement-results-emphasizing-focus-on-fraud/",
+    walletIdx: 0,  // @0xg3ro
+    def: { label:"Mass Liquidation", severity:"high", sources:["CoinDesk"] },
+    desc: "Single Hyperliquid trader lost $220M on ETH long as market plunged 10% — 434,945 traders liquidated across venues, $2.6B total wiped in 24h.",
+    excerpt: "Feb 1, 2026 — The largest single liquidation occurred on Hyperliquid: $222.65M ETH-USD position wiped out. Hyperliquid alone recorded $1.09B in liquidations, nearly 40% of global totals.",
+    url: "https://www.coindesk.com/markets/2026/02/01/single-trader-just-lost-usd220-million-as-ether-plunged-10",
     secsAgo: 2760
   },
   {
     walletIdx: 5,  // @boosted
-    def: { label:"Regulatory Flag", severity:"high", sources:["CFTC.gov","Law360"] },
-    desc: "CFTC enforcement shifted toward fraud and manipulation — DeFi fraud now top priority.",
-    excerpt: "Dec 17, 2025 — The Division of Enforcement will likely continue prioritizing fraud and manipulation over technical lapses in the coming year.",
-    url: "https://www.mvalaw.com/media/news/15224_Law360_-_How_CFTC_Enforcement_Shifted_In_2025_And_What_27s_Next.pdf",
+    def: { label:"Analytics Report", severity:"med", sources:["Chainalysis"] },
+    desc: "Chainalysis 2026 report: $17B stolen in crypto scams and fraud in 2025 — impersonation scams up 1400% YoY; AI-enabled scams 4.5x more profitable.",
+    excerpt: "Jan 13, 2026 — $17 billion estimated stolen in crypto scams in 2025. Impersonation scams show 1400% year-over-year growth. AI-enabled scams were 4.5 times more profitable than traditional scams.",
+    url: "https://www.chainalysis.com/blog/crypto-scams-2026/",
     secsAgo: 3420
   },
   {
-    walletIdx: 8,  // @SillySmall
-    def: { label:"Regulatory Flag", severity:"med", sources:["CFTC.gov","JD Supra"] },
-    desc: "CFTC wading back into DeFi enforcement — DEX operator liability expanding under Commodity Exchange Act.",
-    excerpt: "Sep 9, 2025 — CFTC Wades into DeFi Enforcement Again. Daily Compliance News: End of Enforcement Sprint edition.",
-    url: "https://www.jdsupra.com/topics/cftc/decentralized-finance-defi/commodity-exchange-act-cea/",
+    walletIdx: 2,  // @liukai
+    def: { label:"Rug Pull Report", severity:"med", sources:["Solidus Labs"] },
+    desc: "Solidus Labs research: 98.7% of Pump.fun tokens and 93% of Raydium liquidity pools exhibit pump-and-dump or rug pull characteristics.",
+    excerpt: "2025 — Approximately 98.7% of tokens on Pump.fun and 93% of liquidity pools on Raydium have exhibited characteristics of pump-and-dump schemes or rug pulls, posing serious regulatory and reputational threats.",
+    url: "https://www.soliduslabs.com/reports/solana-rug-pulls-pump-dumps-crypto-compliance",
     secsAgo: 4080
   },
   {
     walletIdx: 10, // @farmerchts
-    def: { label:"Regulatory Flag", severity:"med", sources:["CFTC.gov","Paul Weiss"] },
-    desc: "CFTC 2025 Year in Review: Crypto Sprint launched, DeFi and digital asset enforcement ramping up.",
-    excerpt: "Feb 19, 2026 — Chairman Pham launched a 'Crypto Sprint' to implement recommendations from the President's Working Group on Digital Assets.",
-    url: "https://www.paulweiss.com/insights/client-memos/cftc-enforcement-2025-year-in-review",
+    def: { label:"Coordinated Dump", severity:"med", sources:["crypto.news"] },
+    desc: "Solana meme coin market lost $15B as insiders and snipers dumped — TRUMP crashed from $103 to $16, MELANIA down 92%.",
+    excerpt: "Feb 22, 2025 — Most Solana meme coins crashed by double digits, total market cap falling from $25B to $10B. Official Trump down from $103 to $16. Insiders and snipers identified as primary sellers.",
+    url: "https://crypto.news/15b-wipeout-insiders-snipers-dump-solana-meme-coins",
     secsAgo: 4740
   },
   {
-    walletIdx: 0,  // @0xg3ro
-    def: { label:"Community Warning", severity:"med", sources:["ConnectCU"] },
-    desc: "Documented DeFi scam: fake platform promised 30% weekly returns, vanished with $12M investor funds.",
-    excerpt: "2025 — A fake DeFi platform promised 30% weekly returns and vanished with $12 million in investor funds. Phishing and social engineering remain primary vectors.",
-    url: "https://www.connectcu.org/index.php/blog/204-crypto-and-defi-investment-scams-in-2025-what-you-need-to-know",
+    walletIdx: 4,  // @_OHT_
+    def: { label:"Wash Trading Alert", severity:"med", sources:["TRM Labs"] },
+    desc: "TRM Labs 2026 report: ~34% of A7A5 stablecoin volume artificially inflated via wash trading — rapid circular transfers consistent with automated manipulation.",
+    excerpt: "Jan 28, 2026 — Approximately 34% of A7A5's trading volume was likely artificially inflated through wash trading, including rapid circular transfers consistent with automated behavior designed to inflate apparent liquidity.",
+    url: "https://www.trmlabs.com/reports-and-whitepapers/2026-crypto-crime-report",
     secsAgo: 5400
   },
 ];
