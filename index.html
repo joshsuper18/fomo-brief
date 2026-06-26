@@ -571,7 +571,7 @@ body {
       <a href="mailto:josh@parallel.ai" class="nav-contact">Contact</a>
       <div class="live-badge">
         <span class="live-dot"></span>
-        <span id="monitor-count">20 Running</span>
+        <span id="monitor-count">8 Running</span>
       </div>
     </div>
   </header>
@@ -785,7 +785,7 @@ body {
           <div class="cta-eyebrow">8 monitors live · 3 CPM each · Start this week</div>
           <a href="mailto:josh@parallel.ai" class="cta-btn">Start the pilot →</a>
           <a href="mailto:josh@parallel.ai" class="cta-secondary">Questions? Contact Parallel</a>
-          <div class="cta-foot">Parallel Web Systems · Internal · June 24, 2026</div>
+          <div class="cta-foot">Parallel Web Systems · Internal · June 25, 2026</div>
         </div>
 
       </div><!-- /brief-content -->
@@ -805,18 +805,18 @@ body {
 
 <script>
 const WALLETS = [
-  { addr:"0x3r0...A1B2", handle:"@0xg3ro",    label:"90%+ Winrate", minsAgo:2,  monitorId:"monitor_04d1f43d9319481d9b88d301d2abfdc8" },
-  { addr:"0xle0...C3D4", handle:"@0xleo",      label:"Safe & Smart", minsAgo:1,  monitorId:"monitor_04d1f43d9319481d9b88d301d2abfdc8" },
-  { addr:"0xluk...E5F6", handle:"@liukai",     label:"fomo Smarts",  minsAgo:4,  monitorId:"monitor_0dc95802005b4ca6b37ddc5382b0a3ae" },
-  { addr:"0xPGc...G7H8", handle:"@pingucharts",label:"90%+ Winrate", minsAgo:3,  monitorId:"monitor_0dc95802005b4ca6b37ddc5382b0a3ae" },
-  { addr:"0xOHT...I9J0", handle:"@_OHT_",      label:"Safe & Smart", minsAgo:7,  monitorId:"monitor_20454a6b18b94e1da9b0d23522777815" },
-  { addr:"0xmk4...K1L2", handle:"@boosted",    label:"fomo Smarts",  minsAgo:5,  monitorId:"monitor_37d1fbc5d371497cb83c1bd705f134b8" },
-  { addr:"0xRod...M3N4", handle:"@rodotfun",   label:"New Whales",   minsAgo:6,  monitorId:"monitor_20454a6b18b94e1da9b0d23522777815" },
-  { addr:"0xBLN...O5P6", handle:"@BLUNF",      label:"90%+ Winrate", minsAgo:9,  monitorId:"monitor_2636ec48da7847b79807c0ca00cc51c1" },
-  { addr:"0xSSO...Q7R8", handle:"@SillySmall", label:"Safe & Smart", minsAgo:11, monitorId:"monitor_e8f3a6250db247169e56fa9b880aebf2" },
-  { addr:"0xCr0...S9T0", handle:"@Crypt0N8v",  label:"fomo Smarts",  minsAgo:8,  monitorId:"monitor_37d1fbc5d371497cb83c1bd705f134b8" },
-  { addr:"0xfar...U1V2", handle:"@farmerchts", label:"90%+ Winrate", minsAgo:13, monitorId:"monitor_7003a4a40c764de9b605a1f596909bb7" },
-  { addr:"0x404...W3X4", handle:"@404flipped",  label:"New Whales",  minsAgo:10, monitorId:"monitor_e8f3a6250db247169e56fa9b880aebf2" },
+  { addr:"0x3r0...A1B2", handle:"@0xg3ro",    label:"90%+ Winrate", minsAgo:2,  monitorId:"monitor_2636ec48da7847b79807c0ca00cc51c1" },
+  { addr:"0xle0...C3D4", handle:"@0xleo",      label:"Safe & Smart", minsAgo:1,  monitorId:"monitor_2636ec48da7847b79807c0ca00cc51c1" },
+  { addr:"0xluk...E5F6", handle:"@liukai",     label:"fomo Smarts",  minsAgo:4,  monitorId:"monitor_bec9824cc5224034b8321740757c10a9" },
+  { addr:"0xPGc...G7H8", handle:"@pingucharts",label:"90%+ Winrate", minsAgo:3,  monitorId:"monitor_bec9824cc5224034b8321740757c10a9" },
+  { addr:"0xOHT...I9J0", handle:"@_OHT_",      label:"Safe & Smart", minsAgo:7,  monitorId:"monitor_e171d371987048559b68a20af2fd3975" },
+  { addr:"0xmk4...K1L2", handle:"@boosted",    label:"fomo Smarts",  minsAgo:5,  monitorId:"monitor_e171d371987048559b68a20af2fd3975" },
+  { addr:"0xRod...M3N4", handle:"@rodotfun",   label:"New Whales",   minsAgo:6,  monitorId:"monitor_9d18389273d04076b5c48cf05f8c030a" },
+  { addr:"0xBLN...O5P6", handle:"@BLUNF",      label:"90%+ Winrate", minsAgo:9,  monitorId:"monitor_9d18389273d04076b5c48cf05f8c030a" },
+  { addr:"0xSSO...Q7R8", handle:"@SillySmall", label:"Safe & Smart", minsAgo:11, monitorId:"monitor_a8f3c8707f4d4083b96c8cc0a6e5dd99" },
+  { addr:"0xCr0...S9T0", handle:"@Crypt0N8v",  label:"fomo Smarts",  minsAgo:8,  monitorId:"monitor_593ed09b092c4606a2866af39ce5cf05" },
+  { addr:"0xfar...U1V2", handle:"@farmerchts", label:"90%+ Winrate", minsAgo:13, monitorId:"monitor_c1a5d571fbf740e385b90fdb7aab75d0" },
+  { addr:"0x404...W3X4", handle:"@404flipped",  label:"New Whales",  minsAgo:10, monitorId:"monitor_d016cee4608647a0bd48cab9818c963d" },
 ];
 
 const EVENT_DEFS = [
@@ -945,8 +945,9 @@ function addEvent(w, def, isNew, sourceUrl, excerpt) {
   });
 })();
 
-// Citation-verified events from monitor_2636ec48 — "SEC CFTC crypto enforcement DeFi wallet fraud 2025"
-// All 9 citations expanded to individual cards, each with real excerpt from source
+// Real events fetched from Parallel Monitor API — monitor_2636ec48 ("SEC CFTC crypto enforcement DeFi wallet fraud 2025")
+// 8 live monitors: _2636ec48, _bec9824, _e171d371, _9d18389, _a8f3c87, _593ed09, _c1a5d571, _d016cee4
+// Events are the actual API response: 2 event groups, 9 citations total, June 25 2026
 var REAL_EVENTS = [
   {
     walletIdx: 6,  // @rodotfun
