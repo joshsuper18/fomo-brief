@@ -63,10 +63,18 @@ def extract_article_date(output: dict, url: str) -> datetime | None:
 
     month_names = {"jan":1,"feb":2,"mar":3,"apr":4,"may":5,"jun":6,
                    "jul":7,"aug":8,"sep":9,"oct":10,"nov":11,"dec":12}
+    # "Jun 25, 2026" or "June 25 2026"
     m = re.search(r'\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2}),?\s+(20\d{2})', text, re.I)
     if m:
         try:
             return datetime(int(m.group(3)), month_names[m.group(1).lower()[:3]], int(m.group(2)), tzinfo=timezone.utc)
+        except ValueError:
+            pass
+    # "March 2026" (no day — treat as 1st of month)
+    m = re.search(r'\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(20\d{2})\b', text, re.I)
+    if m:
+        try:
+            return datetime(int(m.group(2)), month_names[m.group(1).lower()[:3]], 1, tzinfo=timezone.utc)
         except ValueError:
             pass
 
@@ -118,16 +126,14 @@ def score_event(raw_event: dict, monitor_meta: dict, now: datetime) -> float:
         if url:
             break
 
-    # Reject articles older than ARTICLE_MAX_DAYS based on actual publish date
+    # Reject articles older than ARTICLE_MAX_DAYS — must confirm date or discard
     article_dt = extract_article_date(output, url)
-    if article_dt:
-        article_age_days = (now - article_dt).total_seconds() / 86400
-        if article_age_days > ARTICLE_MAX_DAYS:
-            return -1
-        recency_score = max(0, 1 - article_age_days / ARTICLE_MAX_DAYS)
-    else:
-        # No date found — allow but score conservatively
-        recency_score = 0.3
+    if not article_dt:
+        return -1  # can't confirm recency — reject
+    article_age_days = (now - article_dt).total_seconds() / 86400
+    if article_age_days > ARTICLE_MAX_DAYS:
+        return -1
+    recency_score = max(0, 1 - article_age_days / ARTICLE_MAX_DAYS)
 
     confidence_score = CONFIDENCE_RANK.get(confidence_str, 0)
     severity_score = 1 if monitor_meta.get("severity") == "high" else 0
@@ -269,9 +275,14 @@ def search_fallback(now: datetime) -> list:
             snippet = item.get("snippet", item.get("description", "")).strip()
             if not url or is_homepage(url) or url in seen_urls:
                 continue
-            seen_urls.add(url)
             if len(snippet) < 60:
                 continue
+            # Confirm article is actually recent before accepting
+            probe_output = {"content": snippet, "basis": [{"citations": [{"url": url, "excerpts": [snippet]}]}]}
+            art_dt = extract_article_date(probe_output, url)
+            if not art_dt or (now - art_dt).total_seconds() / 86400 > ARTICLE_MAX_DAYS:
+                continue
+            seen_urls.add(url)
             wallet_idx = SEARCH_WALLET_IDX[len(candidates) % len(SEARCH_WALLET_IDX)]
             # Synthesize a monitor-like candidate
             fake_output = {
