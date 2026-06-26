@@ -29,6 +29,7 @@ jobs:
         run: python3 .github/scripts/refresh_events.py
 
       - name: Commit and deploy if changed
+        id: deploy
         run: |
           cp fomo-brief.html index.html
           git config user.name  "fomo-refresh[bot]"
@@ -36,7 +37,27 @@ jobs:
           git add fomo-brief.html index.html
           if git diff --staged --quiet; then
             echo "No new events — nothing to commit"
+            echo "updated=false" >> $GITHUB_OUTPUT
           else
             git commit -m "chore: auto-refresh REAL_EVENTS from monitors [skip ci]"
             git push
+            echo "updated=true" >> $GITHUB_OUTPUT
           fi
+
+      - name: Slack morning confirmation (6am PT run only)
+        if: github.event.schedule == '0 14 * * *' || github.event_name == 'workflow_dispatch'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "No SLACK_WEBHOOK_URL secret set — skipping"
+            exit 0
+          fi
+          if [ "${{ steps.deploy.outputs.updated }}" = "true" ]; then
+            MSG="✅ *fomo-brief morning refresh done* — new events deployed from monitors/search. https://josh-parallel.github.io/fomo-brief/"
+          else
+            MSG="ℹ️ *fomo-brief morning refresh* — no new events found, existing feed unchanged. https://josh-parallel.github.io/fomo-brief/"
+          fi
+          curl -s -X POST "$SLACK_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "{\"text\": \"$MSG\"}"
