@@ -1,0 +1,47 @@
+name: Refresh FOMO Events
+
+on:
+  schedule:
+    - cron: '5 * * * *'   # 5 minutes past every hour
+  workflow_dispatch:        # allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install parallel-cli
+        run: pip install parallel-web-tools
+
+      - name: Authenticate parallel-cli
+        env:
+          PARALLEL_API_KEY: ${{ secrets.PARALLEL_API_KEY }}
+        run: |
+          parallel-cli config set api-key "$PARALLEL_API_KEY"
+
+      - name: Fetch monitor events and refresh HTML
+        env:
+          PARALLEL_API_KEY: ${{ secrets.PARALLEL_API_KEY }}
+        run: python3 .github/scripts/refresh_events.py
+
+      - name: Commit and deploy if changed
+        run: |
+          cp fomo-brief.html index.html
+          git config user.name  "fomo-refresh[bot]"
+          git config user.email "fomo-refresh[bot]@users.noreply.github.com"
+          git add fomo-brief.html index.html
+          if git diff --staged --quiet; then
+            echo "No new events — nothing to commit"
+          else
+            git commit -m "chore: auto-refresh REAL_EVENTS from monitors [skip ci]"
+            git push
+          fi
