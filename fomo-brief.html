@@ -954,71 +954,47 @@ function addEvent(w, def, isNew, sourceUrl, excerpt) {
   });
 })();
 
-// Real events — confirmed articles published June 24-25, 2026 only
+// Real events — auto-refreshed from Parallel monitors (last 48h, highest confidence first)
 var REAL_EVENTS = [
   {
-    walletIdx: 1,  // @0xleo
-    def: { label:"Influencer Fraud Sentence", severity:"high", sources:["FinanceFeeds"] },
-    desc: "NY man sentenced 15 months for $1.4M crypto fraud — faked Telegram handles of popular influencers to collect staking funds.",
-    excerpt: "Jun 24, 2026 — Noman Saleem, 39, sentenced to 15 months for creating fake Telegram handles impersonating top crypto influencers. Thousands joined; victims sent crypto expecting staking rewards he never delivered.",
-    url: "https://financefeeds.com/fake-crypto-influencer-gets-15-months-for-1-4-million-staking-fraud/",
-    secsAgo: 360
+    walletIdx: 3,
+    def: { label: "Memecoin Rug Pull", severity: "high", sources: ["Twitter/X"] },
+    desc: "News reports (Yahoo Finance) \u2014 May 27, 2026 \u2014 South Korean prosecutors charged five people accused of orchestrating a 'meme coin rug pull' on Pump.fun, alleging large investor",
+    excerpt: "Jun 26, 2026 \u2014 News reports (Yahoo Finance) \u2014 May 27, 2026 \u2014 South Korean prosecutors charged five people accused of orchestrating a 'meme coin rug pull' on Pump.fun, alleging large investor losses (reports cite criminal charges/...",
+    url: "https://www.coindesk.com/business/2025/05/07/98-of-tokens-on-pump-fun-have-been-rug-pulls-or-an-act-of-fraud-new-report-says",
+    secsAgo: 360,
   },
   {
-    walletIdx: 6,  // @rodotfun
-    def: { label:"Criminal Marketplace Seized", severity:"high", sources:["Elliptic"] },
-    desc: "FBI seized Huione Group's cloud infrastructure — the $134B Telegram marketplace used to launder pig-butchering and copy-trade fraud proceeds across Southeast Asia.",
-    excerpt: "Jun 24, 2026 — DOJ announced seizure of Huione Group's cloud computing account. Elliptic traced $134B+ in cryptoasset transactions through the Cambodian Telegram marketplace used to facilitate copy-trade scams.",
-    url: "https://www.elliptic.co/blog/behind-the-fbi-case-against-huione",
-    secsAgo: 780
+    walletIdx: 3,
+    def: { label: "Memecoin Rug Pull", severity: "high", sources: ["Twitter/X"] },
+    desc: "Decrypt reported Pump.fun among Solana-based platforms flagged or under scrutiny in mid-2025 amid a wave of memecoin scams and urged reporting of suspected fraud; article",
+    excerpt: "Jun 26, 2026 \u2014 Decrypt reported Pump.fun among Solana-based platforms flagged or under scrutiny in mid-2025 amid a wave of memecoin scams and urged reporting of suspected fraud; article highlighted regulatory and industry concern...",
+    url: "https://www.coindesk.com/business/2025/05/07/98-of-tokens-on-pump-fun-have-been-rug-pulls-or-an-act-of-fraud-new-report-says",
+    secsAgo: 960,
   },
   {
-    walletIdx: 7,  // @BLUNF
-    def: { label:"Treasury Sanctions", severity:"high", sources:["Chainalysis"] },
-    desc: "US Treasury sanctioned 9 individuals and 26 entities in Prince Group scam network — responsible for $10B in crypto investment fraud against Americans in 2024.",
-    excerpt: "Jun 24, 2026 — US Treasury sanctioned nine individuals and 26 entities linked to the Prince Group criminal org. The network cost Americans at least $10B in 2024 using fake crypto platforms to collect deposits.",
-    url: "https://coinmarketcal.com/en/news/us-treasury-s-10b-scam-warning-shows-why-crypto-is-racing-to-police-itself",
-    secsAgo: 1200
+    walletIdx: 3,
+    def: { label: "Memecoin Rug Pull", severity: "high", sources: ["Twitter/X"] },
+    desc: "Solidus Labs report (covered by CoinDesk) found an alarmingly high proportion of tokens launched on Pump.fun were rug pulls or fraudulent (report cited \u224898% of tokens on Pump.fun",
+    excerpt: "Jun 26, 2026 \u2014 Solidus Labs report (covered by CoinDesk) found an alarmingly high proportion of tokens launched on Pump.fun were rug pulls or fraudulent (report cited \u224898% of tokens on Pump.fun as rugs); Pump.fun disputed the...",
+    url: "https://www.soliduslabs.com/reports/solana-rug-pulls-pump-dumps-crypto-compliance",
+    secsAgo: 1560,
   },
   {
-    walletIdx: 3,  // @pingucharts
-    def: { label:"Sanctions Violation", severity:"high", sources:["TRM Labs","The Block"] },
-    desc: "TRM Labs: CoinEx processed $3.8B in Iran-linked funds, acting as a crypto gateway — on-chain forensics traced flows to IRGC-linked wallets.",
-    excerpt: "Jun 25, 2026 — TRM Labs blockchain forensics identified CoinEx as a major crypto gateway for $3.8B in Iran-linked transaction flows, tracing funds to IRGC-linked wallets — a direct sanctions compliance failure.",
-    url: "https://www.theblock.co/post/406073/coinex-iran-trm-labs",
-    secsAgo: 1680
+    walletIdx: 6,
+    def: { label: "Exchange Suspension", severity: "med", sources: ["CoinDesk"] },
+    desc: "An investor sued offshore exchange BKEX in New York federal court alleging the platform fraudulently induced him and seeking recovery for missing funds (news report of investor",
+    excerpt: "Jun 26, 2026 \u2014 An investor sued offshore exchange BKEX in New York federal court alleging the platform fraudulently induced him and seeking recovery for missing funds (news report of investor litigation against an",
+    url: "https://www.lowenstein.com/news-insights/newsletters/crypto-brief-april-30-2026",
+    secsAgo: 2160,
   },
   {
-    walletIdx: 0,  // @0xg3ro
-    def: { label:"Hack Record Alert", severity:"high", sources:["Cryptopolitan"] },
-    desc: "Q2 2026 closes as the most-hacked quarter on record: 83 incidents, $775M stolen — bridge exploits drove $351M in losses; KelpDAO and Drift Protocol led the quarter.",
-    excerpt: "Jun 25, 2026 — DeFiLlama data confirms Q2 2026 as most hacked quarter on record: 83 crypto protocol exploits, $775M total stolen. Cross-chain bridge attacks drove $351M in losses alone.",
-    url: "https://www.cryptopolitan.com/q2-2026-crypto-most-hacked-quarter",
-    secsAgo: 2280
-  },
-  {
-    walletIdx: 5,  // @boosted
-    def: { label:"Influencer Regulation", severity:"med", sources:["CryptoBreaking"] },
-    desc: "Indonesia's OJK now requires crypto influencers to hold competency certifications before recommending digital assets — only approved exchanges allowed.",
-    excerpt: "Jun 25, 2026 — OJK Regulation No. 6 of 2026 mandates competency certification for influencers recommending digital assets, with promos restricted to authorized exchanges. Signals global tightening of copy-trade promotion.",
-    url: "https://www.cryptobreaking.com/indonesia-introduces-certification-rules-for",
-    secsAgo: 3120
-  },
-  {
-    walletIdx: 2,  // @liukai
-    def: { label:"Exchange Enforcement", severity:"med", sources:["The Block"] },
-    desc: "South Korea fined Bithumb $136K for sharing user data with overseas exchanges without consent — latest KYC/AML enforcement action against crypto exchanges in Asia.",
-    excerpt: "Jun 25, 2026 — South Korean authorities fined Bithumb $136K for sharing user information with overseas exchanges without user consent — part of an ongoing crackdown on KYC and AML compliance failures.",
-    url: "https://www.theblock.co/post/406082/south-korea-bithumb-information-penalty",
-    secsAgo: 4200
-  },
-  {
-    walletIdx: 10, // @farmerchts
-    def: { label:"Security Report", severity:"med", sources:["Ledger"] },
-    desc: "Ledger 2026 threat report: $1B+ stolen in first months via Lazarus Group social engineering — AI-driven scams and supply-chain attacks reshaping the threat model.",
-    excerpt: "Jun 24, 2026 — More than $1B stolen in first months of 2026. Lazarus Group linked to KelpDAO and Drift Protocol via social engineering. AI-driven scams and supply-chain attacks are reshaping the crypto threat model.",
-    url: "https://www.ledger.com/academy/topics/security/crypto-security-2026-how-to-avoid-scams-and-hacks-in-2026",
-    secsAgo: 5700
+    walletIdx: 6,
+    def: { label: "Exchange Suspension", severity: "med", sources: ["CoinDesk"] },
+    desc: "ICIJ investigation reported (Nov 20, 2025) that litigation and victim claims have implicated a crypto exchange operating inside another platform \u2014 coverage included victims who",
+    excerpt: "Jun 26, 2026 \u2014 ICIJ investigation reported (Nov 20, 2025) that litigation and victim claims have implicated a crypto exchange operating inside another platform \u2014 coverage included victims who sued exchanges (example of...",
+    url: "https://www.blumenthal.senate.gov/newsroom/press/release/blumenthal-opens-inquiry-after-new-reporting-reveals-binance-allowed-17-billion-in-money-laundering-to-iran-proxies-and-russias-shadow-fleet",
+    secsAgo: 2760,
   },
 ];
 
