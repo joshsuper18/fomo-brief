@@ -955,7 +955,7 @@ function addEvent(w, def, isNew, sourceUrl, excerpt) {
 })();
 
 // Real events — auto-refreshed from Parallel monitors (last 48h, highest confidence first)
-var REFRESHED_AT = 1782851592181;
+var REFRESHED_AT = 1782863145977;
 var REAL_EVENTS = [
   {
     walletIdx: 4,
@@ -968,10 +968,18 @@ var REAL_EVENTS = [
   {
     walletIdx: 2,
     def: { label: "Whale Liquidation", severity: "high", sources: ["Twitter/X"] },
+    desc: "A significant whale liquidation event occurred on Hyperliquid for the asset XYZ:DRAM-USD, totaling $4.6984 million, cited as the largest single liquidation in a 24-hour window on",
+    excerpt: "A significant whale liquidation event occurred on Hyperliquid for the asset XYZ:DRAM-USD, totaling $4.6984 million, cited as the largest single liquidation in a 24-hour window on June 30,",
+    url: "https://www.kucoin.com/news/flash/whale-deposits-1-11m-to-open-8-253-89-eth-3x-long-position-on-hyperliquid",
+    secsAgo: 960,
+  },
+  {
+    walletIdx: 2,
+    def: { label: "Whale Liquidation", severity: "high", sources: ["Twitter/X"] },
     desc: "As of June 30, 2026, total liquidations across Hyperliquid's HIP-3 markets have reportedly increased to over $3.33 billion, according to data from",
     excerpt: "As of June 30, 2026, total liquidations across Hyperliquid's HIP-3 markets have reportedly increased to over $3.33 billion, according to data from",
     url: "https://www.binance.com/en/square/post/339262595402865",
-    secsAgo: 960,
+    secsAgo: 1560,
   },
   {
     walletIdx: 8,
@@ -979,7 +987,15 @@ var REAL_EVENTS = [
     desc: "On June 30, 2026, a whale added 1.11 million USDC as collateral to Hyperliquid and opened a $13.05 million ETH long position at an entry price of $1,581.9, with a liquidation",
     excerpt: "On June 30, 2026, a whale added 1.11 million USDC as collateral to Hyperliquid and opened a $13.05 million ETH long position at an entry price of $1,581.9, with a liquidation price of",
     url: "https://www.binance.com/en/square/post/339302182546801",
-    secsAgo: 1560,
+    secsAgo: 2160,
+  },
+  {
+    walletIdx: 3,
+    def: { label: "Memecoin Rug Pull", severity: "high", sources: ["PeckShield"] },
+    desc: "Pump.fun officially deprecated its 'Tokenized Agent' launch option on June 30, 2026, following community requests and citing that the feature had resulted in 'excessive griefing'",
+    excerpt: "Pump.fun officially deprecated its 'Tokenized Agent' launch option on June 30, 2026, following community requests and citing that the feature had resulted in 'excessive griefing' and 'needless PVP' (player-versus-player...",
+    url: "https://www.cryptopolitan.com/pump-fun-removes-agent-mode-needless-pvp/",
+    secsAgo: 2760,
   },
   {
     walletIdx: 9,
@@ -987,7 +1003,7 @@ var REAL_EVENTS = [
     desc: "The SEC secured a $5.5 million default judgment against NanoBit and five other defendants on June 30, 2026, for operating a fraudulent crypto trading platform that deceived",
     excerpt: "The SEC secured a $5.5 million default judgment against NanoBit and five other defendants on June 30, 2026, for operating a fraudulent crypto trading platform that deceived investors using fake trading dashboards and...",
     url: "https://www.coindesk.com/policy/2026/06/30/sec-wins-usd5-5-million-default-judgment-over-alleged-fake-crypto-platform-nanobit",
-    secsAgo: 2160,
+    secsAgo: 3360,
   },
   {
     walletIdx: 7,
@@ -995,7 +1011,7 @@ var REAL_EVENTS = [
     desc: "On June 30, 2026, Christopher Delgado, who ran a company called Goliath Ventures, is pleading guilty to wire fraud and money laundering charges in connection with a cryptocurrency",
     excerpt: "On June 30, 2026, Christopher Delgado, who ran a company called Goliath Ventures, is pleading guilty to wire fraud and money laundering charges in connection with a cryptocurrency Ponzi scheme that defrauded investors...",
     url: "https://www.wesh.com/article/orange-county-ponzi-scheme-christopher-delgado-plea/71780399",
-    secsAgo: 2760,
+    secsAgo: 3960,
   },
   {
     walletIdx: 7,
@@ -1003,22 +1019,6 @@ var REAL_EVENTS = [
     desc: "On June 30, 2026, self-exiled Chinese billionaire Guo Wengui (Miles Guo) was sentenced to 30 years in a U.S. prison for orchestrating a $1 billion fraud scheme that involved the",
     excerpt: "On June 30, 2026, self-exiled Chinese billionaire Guo Wengui (Miles Guo) was sentenced to 30 years in a U.S. prison for orchestrating a $1 billion fraud scheme that involved the use of a fake cryptocurrency coin and the...",
     url: "https://apnews.com/article/guo-wengui-chinese-businessman-fraud-3deb06c17c5640a5d63f0e2c72286ac8",
-    secsAgo: 3360,
-  },
-  {
-    walletIdx: 7,
-    def: { label: "Trader Arrest", severity: "high", sources: ["The Block"] },
-    desc: "On June 30, 2026, Cambodian police raided an illegal cryptocurrency exchange on Diamond Island (Koh Pich) in Phnom Penh. The reports accompanying the raid highlighted that Chen",
-    excerpt: "On June 30, 2026, Cambodian police raided an illegal cryptocurrency exchange on Diamond Island (Koh Pich) in Phnom Penh. The reports accompanying the raid highlighted that Chen Zhi, chairman of Prince Holding Group, has...",
-    url: "https://www.facebook.com/khmertimes/posts/police-raided-a-building-suspected-of-providing-illegal-cryptocurrency-exchange-/1061618529541393/",
-    secsAgo: 3960,
-  },
-  {
-    walletIdx: 8,
-    def: { label: "Hyperliquid Alert", severity: "high", sources: ["Twitter/X"] },
-    desc: "Reports on June 30, 2026, describe two documented whale manipulation events for JELLYJELLY on Hyperliquid, including a whale exploit that caused approximately $12M in losses to",
-    excerpt: "Reports on June 30, 2026, describe two documented whale manipulation events for JELLYJELLY on Hyperliquid, including a whale exploit that caused approximately $12M in losses to the community vault, resulting in the...",
-    url: "https://www.binance.com/en/square/post/339645894523441",
     secsAgo: 4560,
   },
 ];
